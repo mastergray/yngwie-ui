@@ -1,0 +1,66 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <title>yngwie-ui | Example 1</title>
+  <!--<link rel="stylesheet" href="/path/to/stylesheet.css">-->
+  <style></style>
+</head>
+<body>
+  <main></main>
+  <script src="./yngwie-ui.js"></script>
+  <script>
+    try {
+      YngwieUI.Actor.init({
+        "items":{
+          "Select Item":null,
+          "Item 1":0,
+          "Item 2":1,
+          "Item 3":2
+        },
+        "display":"null"
+      })
+      .action("initSelect", function () {
+        let items = this.model().state("items");
+        let options = Object.entries(items).map(([label, value])=> YngwieUI.View.init("option", {"value":value}, label));
+        let select =  YngwieUI.View.init("select")
+        .appends(options)
+        .on("click", (evt, node) => {
+          this.send("selectItem", [node.value, node.selectedIndex]);
+        })
+        .inject("main");
+      })
+      .action("initDisplay", function (val) {
+        let display = this.model().prop('display');
+        if (display === "null") {
+          let displayView = YngwieUI.View.init("div");
+          displayView.render("main");
+          this.model().prop("display", displayView);
+        } else {
+          display.text(val === "null" ? "" : val).renderAgain();
+        }
+      })
+      .action("showSelected", function (val, index) {
+        if (val !== "null") {
+          let items = Object.keys(this.model().state("items"));
+          console.log(val, items[index]);
+        }
+      })
+      .action("initReset", function (val) {
+        YngwieUI.View.init("input", {"type":"button", "value":"Reset"}).on("click", (evt) => {
+          let confirmReset = confirm("Are you sure you want to reset page?");
+          if (confirm) {
+            this.model().prop("display", "null");
+            this.send("start");
+          }
+        }).render("main")
+      })
+      .when("start", ["initSelect", "initDisplay", "initReset"])
+      .when("selectItem", ["showSelected", "initDisplay"])
+      .send("start");
+    } catch (err) {
+      console.log(err, err.data);
+    }
+  </script>
+</body>
+</html>
