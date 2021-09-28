@@ -36,3 +36,4 @@ node_modules/
 temp.txt
 test.json
 test.js
+package-lock.json

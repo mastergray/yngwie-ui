@@ -23,7 +23,7 @@
     "webpack-cli": "^4.7.2"
   },
   "dependencies": {
-    "yngwie-mvc": "^0.0.1"
+    "yngwie-mvc": "^0.5.0"
   },
   "bugs": {
     "url": "https://github.com/mastergray/yngwie-ui/issues"
