@@ -1,0 +1,132 @@
+
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <title>yngwie-ui | Example 2</title>
+  <!--<link rel="stylesheet" href="/path/to/stylesheet.css">-->
+  <style></style>
+</head>
+<body>
+  <!--<script src="/path/to/script.js"></script>-->
+  <main></main>
+  <script src="./yngwie-ui.js"></script>
+  <script>
+
+    YngwieUI.App.init()
+      // Define model:
+      .model({
+        "guitars":{
+          "Select A Value":"null",
+          "Guitar 1":"Ibanez GRX20L",
+          "Guitar 2":"Schecter Omen-6",
+          "Guitar 3":"Fender Standard Stratocaster (MIM)",
+          "Guitar 4":"Fender Telecaster (MODSHOP)",
+          "Guitar 5":"Gibson Les Paul (Studio 2018)",
+          "Guitar 6":"Ibanez Prestige RG (RG652AHMLNGB)"
+        },
+        "views":{
+          "guitarSelect":"undefined",
+          "guitarView":"undefined"
+        },
+        "selected":"undefined"
+      })
+
+      .states({
+        "start":["initSelect", "initSelectedView", "initClearButton"],
+        "guitarSelected":["showGuitar"],
+        "guitarReset":["resetGuiar"]
+      })
+
+      .behaviors({
+        "clearView":function (selector, selected) {
+          document.querySelector(selector).innerHTML = "";
+          this.transistion("start");
+          this.send("whatCleared", [selected]);
+        },
+        "whatCleared":function (selected) {
+          console.log(`${JSON.stringify(selected)} was cleared`);
+        }
+      })
+
+      // Renders SELECT for "guitars" MODEL:
+      .action("initSelect", function (MODEL, next) {
+
+        // Get "guitars" from model:
+        let guitars = Object.entries(MODEL.state("guitars"));
+
+        // Initialize SELECT element:
+        let select = guitars.reduce((elem, [key, value]) => {
+          let option = YngwieUI.View.init("option", {"value":value}, key);
+          return elem.append(option)
+        }, YngwieUI.View.init("select"));
+
+        // Bind listener to element to set selected "guitar" from select
+        select.on("click", (evt, node) => {
+          let [label, guitar] = guitars[node.selectedIndex];
+          MODEL.prop("selected", {
+            "label":label,
+            "guitar":guitar
+          });
+          this.transistion("guitarSelected");
+        }).render("main");
+
+        // Store view in model:
+        MODEL.update("views", (views) => {
+          views.guitarSelect = select;
+          return views;
+        })
+
+        // Go to next action
+        next();
+
+      })
+
+      // Renders view for select guitar from MODEL:
+      .action("initSelectedView", function (MODEL, next) {
+
+        // Initialize and render view for showing selected guitar:
+        let view = YngwieUI.View.init("div")
+          .attrib("id", "guitarView")
+          .text("No Guitar Selected");
+        view.render("main");
+
+        // Store view in model:
+        MODEL.update("views", (views) => {
+          views.guitarView = view;
+          return views;
+        });
+
+        // Initialize next "action" for this state:
+        next();
+
+      })
+
+      // Renders view for reset button
+      .action("initClearButton", function (MODEL, next) {
+
+        YngwieUI.View.init("input", {"type":"button", "value":"Reset"}).on("click", (evt) => {
+          let confirmReset = confirm("Are you sure you want to reset everything?");
+          if (confirmReset) {
+            this.send("clearView", ["main", MODEL.prop("selected")]);
+            MODEL.prop("selected", "undefined");
+          }
+        }).render("main")
+
+      })
+
+      // Renders stored view to show selected guitar:
+      .action("showGuitar", function (MODEL) {
+        let selected = MODEL.prop("selected");
+        MODEL.state("views").guitarView
+          .text(`${selected.label} ${selected.guitar}`)
+          .renderAgain();
+      })
+
+
+    // Initalize first state transistion:
+    .transistion("start");
+
+  </script>
+</body>
+</html>

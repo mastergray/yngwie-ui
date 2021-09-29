@@ -1,6 +1,7 @@
 import YngwieMapping from "./Mapping/main.js";
 import YngwieActor from "./Actor/main.js";
 import YngwieMachine from "./Machine/main.js";
+import YngwieApp from "./App/main.js";
 import {Model, View, Error} from "yngwie-mvc"
 
 
@@ -10,5 +11,6 @@ export {
   View,
   Model,
   Error,
-  YngwieMachine as Machine
+  YngwieMachine as Machine,
+  YngwieApp as App
 }
