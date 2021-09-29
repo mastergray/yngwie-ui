@@ -34,10 +34,10 @@ export default class YngwieActor {
   when(message, actionID) {
     try {
       if (actionID instanceof Array) {
-          for (let i = 0; i < actionID.length; i++) {
-            this.when(message, actionID[i]);
-          }
-          return this;
+        for (let i = 0; i < actionID.length; i++) {
+          this.when(message, actionID[i]);
+        }
+        return this;
       }
       if (this._actions.has(actionID)) {
         this._behaviors.set(message, actionID);

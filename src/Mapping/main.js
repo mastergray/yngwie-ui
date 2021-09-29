@@ -23,7 +23,7 @@ export default class YngwieMapping {
   }
 
   // :: [*], [*] -> *, * -> * -> *
-  // Applues success function to given array of values if all values meet constraint, otherwise applies fail function to first failed value:
+  // Applies success function to given array of values if all values meet constraint, otherwise applies fail function to first failed value:
   checkAll(arr, succ, fail) {
     if (Array.isArray(arr)) {
       for (let i = 0; i < arr.length; i++) {
