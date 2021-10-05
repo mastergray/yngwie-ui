@@ -32,13 +32,13 @@
         "selected":"undefined"
       })
 
-      .processes({
+      .tasks({
         "start":["initSelect", "initSelectedView", "initClearButton"],
         "guitarSelected":["showGuitar"],
         "guitarReset":["resetGuiar"]
       })
 
-      .tasks({
+      .signals({
         "clearView":function (selector, selected) {
           document.querySelector(selector).innerHTML = "";
           this.run("start");
@@ -50,7 +50,7 @@
       })
 
       // Renders SELECT for "guitars" MODEL:
-      .action("initSelect", function (MODEL, next) {
+      .action("initSelect", function (MODEL, resolve, reject) {
 
         // Get "guitars" from model:
         let guitars = Object.entries(MODEL.state("guitars"));
@@ -77,13 +77,12 @@
           return views;
         })
 
-        // Go to next action
-        next();
+        resolve(MODEL);
 
       })
 
       // Renders view for select guitar from MODEL:
-      .action("initSelectedView", function (MODEL, next) {
+      .action("initSelectedView", function (MODEL, resolve, reject) {
 
         // Initialize and render view for showing selected guitar:
         let view = YngwieUI.View.init("div")
@@ -97,13 +96,12 @@
           return views;
         });
 
-        // Initialize next "action" for this state:
-        next();
+        resolve(MODEL);
 
       })
 
       // Renders view for reset button
-      .action("initClearButton", function (MODEL, next) {
+      .action("initClearButton", function (MODEL, resolve, reject) {
 
         YngwieUI.View.init("input", {"type":"button", "value":"Reset"}).on("click", (evt) => {
           let confirmReset = confirm("Are you sure you want to reset everything?");
@@ -111,16 +109,19 @@
             this.send("clearView", ["main", MODEL.prop("selected")]);
             MODEL.prop("selected", "undefined");
           }
-        }).render("main")
+        }).render("main");
+
+        resolve(MODEL);
 
       })
 
       // Renders stored view to show selected guitar:
-      .action("showGuitar", function (MODEL) {
+      .action("showGuitar", function (MODEL, resolve, reject) {
         let selected = MODEL.prop("selected");
         MODEL.state("views").guitarView
           .text(`${selected.label} ${selected.guitar}`)
           .renderAgain();
+        resolve(MODEL);
       })
 
 

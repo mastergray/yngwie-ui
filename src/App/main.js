@@ -2,24 +2,24 @@ import YngwieMachine from "../Machine/main.js";
 
 export default class YngwieApp extends YngwieMachine {
 
-  // CONSTRUCTOR :: yngwieModel, {STRING:[STRING]}, {STRING:... -> *}, {STRING:yngwieModel, NEXT -> VOID}, {STRING:[... -> VOID]} -> this
-  constructor(model, process, tasks, actions, subscriptions) {
-    super(model, process, actions);
-    this._tasks = tasks;
+  // CONSTRUCTOR :: yngwieModel|OBJECT|VOID, {STRING:[STRING]}|VOID, {STRING:MODEL, RESOLVE, REJECT -> PROMISE(MODEL)}|VOID, {STRING: ... -> PROMISE(*)}|VOID, {STRING:... -> *}|VOID -> this
+  constructor(model, tasks, actions, signals, subscriptions) {
+    super(model, tasks, actions);
+    this._signals = signals;
     this._subscriptions = subscriptions;
   }
 
   // :: {STRING:... -> *} -> this
-  // Sets "tasks" for this instance:
-  tasks(tasks) {
-    this._tasks  = tasks;
+  // Sets "signals" for this instance:
+  signals(signals) {
+    this._signals  = signals;
     return this;
   }
 
   // STRING, ... -> * -> this
-  // Binds function to taskID:
-  when(taskID, fn) {
-    this._tasks[taskID] = fn;
+  // Binds function to signalID:
+  signal(signalID, fn) {
+    this._signals[signalID] = fn;
     return this;
   }
 
@@ -57,11 +57,11 @@ export default class YngwieApp extends YngwieMachine {
   }
 
   // STRING, *|[*] -> PROMISE(*)
-  // Sends array of values to given taskID, returning promise of response
-  send(taskID, vals) {
+  // Sends array of values to given signalID, returning promise of response
+  send(signalID, vals) {
     return new Promise(async (resolve, reject) => {
       try {
-        let response = await this._tasks[taskID].apply(this, [].concat(vals));
+        let response = await this._signals[signalID].apply(this, [].concat(vals));
         resolve(response);
       } catch (err) {
         reject(err);
@@ -75,10 +75,10 @@ export default class YngwieApp extends YngwieMachine {
    *
    */
 
-   // :: yngwieModel, {STRING:[STRING]}, {STRING:... -> *}, {STRING:yngwieModel, NEXT -> VOID} -> yngwieApp
+   // :: yngwieModel|OBJECT|VOID, {STRING:[STRING]}|VOID, {STRING:MODEL, RESOLVE, REJECT -> PROMISE(MODEL)}|VOID, {STRING: ... -> PROMISE(*)}|VOID, {STRING:... -> *}|VOID -> yngwieApp
    // Static factory method:
-   static init(model, processs, tasks, actions) {
-     return new YngwieApp(model, processs, tasks);
+   static init(model, processs, signals, actions) {
+     return new YngwieApp(model, processs, signals);
    }
 
 
