@@ -32,16 +32,16 @@
         "selected":"undefined"
       })
 
-      .states({
+      .processes({
         "start":["initSelect", "initSelectedView", "initClearButton"],
         "guitarSelected":["showGuitar"],
         "guitarReset":["resetGuiar"]
       })
 
-      .behaviors({
+      .tasks({
         "clearView":function (selector, selected) {
           document.querySelector(selector).innerHTML = "";
-          this.transistion("start");
+          this.run("start");
           this.send("whatCleared", [selected]);
         },
         "whatCleared":function (selected) {
@@ -68,7 +68,7 @@
             "label":label,
             "guitar":guitar
           });
-          this.transistion("guitarSelected");
+          this.run("guitarSelected");
         }).render("main");
 
         // Store view in model:
@@ -125,7 +125,7 @@
 
 
     // Initalize first state transistion:
-    .transistion("start");
+    .run("start");
 
   </script>
 </body>

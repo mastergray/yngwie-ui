@@ -5,9 +5,9 @@ import Util from "../Util/main.js";
 export default class YngwieMachine {
 
   // CONSTRUCTOR :: yngwieModel|OBJECT|VOID, {STRING:[STRING]}|VOID, {STRING|FUNCTION}|VOID
-  constructor(model, states, actions) {
+  constructor(model, processes, actions) {
     this._model = YngwieUI.Model.setAsModel(model);
-    this._states = states || {};
+    this._processes = processes || {};
     this._actions = actions || {};
   }
 
@@ -27,31 +27,31 @@ export default class YngwieMachine {
   }
 
   // :: {STRING:[STRING]}|VOID -> this;
-  // Sets "states" for this instance:
-  states(states) {
-    this._states = states;
+  // Sets "processes" for this instance:
+  processes(processes) {
+    this._processes = processes;
     return this;
   }
 
   // STRING, [STRING] -> this
-  // Sets "state" for this instance:
-  state(id, actions) {
-    this._states[id] = actions;
+  // Sets "process" for this instance:
+  process(id, actions) {
+    this._processes[id] = actions;
     return this;
   }
 
   // STRING, (model:yngwieModel, next:(VOID -> VOID) -> VOID) -> this
   // Sets "action" for this instance:
-  // NOTE: Calling "next" will call next action of state this action maybe bound to:
+  // NOTE: Calling "next" will call next action of process this action maybe bound to:
   action(id, fn) {fn
     this._actions[id] = fn;
     return this;
   }
 
   // :: STRING -> VOID
-  // Calls all actions for the given  state ID:
-  transistion(stateID) {
-    let actions = this._states[stateID];
+  // Calls all actions for the given  process ID:
+  run(processID) {
+    let actions = this._processes[processID];
     Util.forEachCps(0, actions || [], (actionID, next) => {
       this._actions[actionID].call(this, this.model(), next);
     })
@@ -65,8 +65,8 @@ export default class YngwieMachine {
 
    // :: yngwieModel|OBJECT|VOID, {STRING:[STRING]}|VOID, {STRING|FUNCTION}|VOID -> yngwieMachine
    // Static factory method:
-   static init(model, states, actions) {
-     return new YngwieMachine(model, states, actions);
+   static init(model, processes, actions) {
+     return new YngwieMachine(model, processes, actions);
    }
 
 }
