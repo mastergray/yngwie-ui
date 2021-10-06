@@ -43,14 +43,13 @@ export default class YngwieMachine {
   // STRING, (MODEL, RESOLVE, REJECT -> PROMISE(MODEL)) -> this
   // Sets "action" for this instance:
   action(id, fn) {
-    this._actions[id] = (model) => new Promise((resolve, reject) => {
-      fn.apply(this, [model, resolve, reject]);
-    })
+    this._actions[id] = fn;
     return this;
   }
 
   // :: STRING -> PROMISE(*)
   // Calls all actions for the given  task ID:
+  // NOTE: "Action" is always called in the context of "this" instance
   run(taskID) {
     let actions = this._tasks[taskID];
     if (actions !== undefined) {
@@ -59,7 +58,11 @@ export default class YngwieMachine {
         let actionID = actions[i];
         let action = this._actions[actionID];
         if (action !== undefined) {
-          result.then(action);
+          result.then(model=>{
+            return new Promise((resolve, reject) => {
+             action.apply(this, [model, resolve, reject]);
+            })
+          });
         } else {
           return Promise.reject("No Action found for given action ID")
         }
@@ -67,9 +70,6 @@ export default class YngwieMachine {
       return result;
     }
     return Promise.reject("No Actions found for given task ID")
-    /*Util.forEachCps(0, actions || [], (actionID, next) => {
-      this._actions[actionID].call(this, this.model(), next);
-    })*/
   }
 
   /**

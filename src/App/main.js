@@ -5,8 +5,8 @@ export default class YngwieApp extends YngwieMachine {
   // CONSTRUCTOR :: yngwieModel|OBJECT|VOID, {STRING:[STRING]}|VOID, {STRING:MODEL, RESOLVE, REJECT -> PROMISE(MODEL)}|VOID, {STRING: ... -> PROMISE(*)}|VOID, {STRING:... -> *}|VOID -> this
   constructor(model, tasks, actions, signals, subscriptions) {
     super(model, tasks, actions);
-    this._signals = signals;
-    this._subscriptions = subscriptions;
+    this._signals = signals || {};
+    this._subscriptions = subscriptions || {};
   }
 
   // :: {STRING:... -> *} -> this
@@ -67,6 +67,16 @@ export default class YngwieApp extends YngwieMachine {
         reject(err);
       }
     })
+  }
+
+  // :: yngwieApp -> this
+  // Merges actions, tasks, signals and subscriptions from given app to this instance:
+  chain(app) {
+    this._tasks = Object.assign(this._tasks, app._tasks);
+    this._signals = Object.assign(this._signals, app._signals);
+    this._actions = Object.assign(this._actions, app._actions);
+    this._subscriptions = Object.assign(this._subscriptions, app._subscriptions);
+    return this;
   }
 
   /**

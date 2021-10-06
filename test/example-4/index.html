@@ -1,0 +1,63 @@
+
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <title>yngwie-ui | Example 2</title>
+  <!--<link rel="stylesheet" href="/path/to/stylesheet.css">-->
+  <style></style>
+</head>
+<body>
+  <main></main>
+  <script src="../yngwie-ui.js"></script>
+  <script src="./tasks/StartTask.js"></script>
+  <script src="./tasks/GuitarSelectedTask.js"></script>
+  <script>
+
+    YngwieUI.App.init()
+      // Define model:
+      .model({
+        "guitars":{
+          "Select A Value":"null",
+          "Guitar 1":"Ibanez GRX20L",
+          "Guitar 2":"Schecter Omen-6",
+          "Guitar 3":"Fender Standard Stratocaster (MIM)",
+          "Guitar 4":"Fender Telecaster (MODSHOP)",
+          "Guitar 5":"Gibson Les Paul (Studio 2018)",
+          "Guitar 6":"Ibanez Prestige RG (RG652AHMLNGB)"
+        },
+        "views":{
+          "guitarSelect":"undefined",
+          "guitarView":"undefined"
+        },
+        "selected":"undefined"
+      })
+
+      .tasks({
+        "start":["initSelect", "initSelectedView", "initClearButton"],
+        "guitarSelected":["showGuitar"]
+      })
+
+      // "Chain" in actions from other instance to support defined tasks:
+      .chain(StartTask)
+      .chain(GuitarSelectedTask)
+
+      // Signal shared between actions:
+      .signals({
+        "clearView":function (selector, selected) {
+          document.querySelector(selector).innerHTML = "";
+          this.run("start");
+          this.send("whatCleared", [selected]);
+        },
+        "whatCleared":function (selected) {
+          console.log(`${JSON.stringify(selected)} was cleared`);
+        }
+      })
+
+
+    // Initalize first state transistion:
+    .run("start");
+
+  </script>
+</body>
+</html>
