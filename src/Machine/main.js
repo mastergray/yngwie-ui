@@ -29,7 +29,7 @@ export default class YngwieMachine {
   // :: {STRING:[STRING]}|VOID -> this;
   // Sets "tasks" for this instance:
   tasks(tasks) {
-    this._tasks = tasks;
+    this._tasks = Object.assign(this._tasks, tasks);
     return this;
   }
 
@@ -58,9 +58,9 @@ export default class YngwieMachine {
         let actionID = actions[i];
         let action = this._actions[actionID];
         if (action !== undefined) {
-          result.then(model=>{
+          result = result.then(model=>{
             return new Promise((resolve, reject) => {
-             action.apply(this, [model, resolve, reject]);
+              action.apply(this, [model, resolve, reject]);
             })
           });
         } else {

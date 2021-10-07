@@ -12,7 +12,7 @@ export default class YngwieApp extends YngwieMachine {
   // :: {STRING:... -> *} -> this
   // Sets "signals" for this instance:
   signals(signals) {
-    this._signals  = signals;
+    this._signals  = Object.assign(this._signals, signals);
     return this;
   }
 
@@ -36,7 +36,7 @@ export default class YngwieApp extends YngwieMachine {
   // :: STRING, ... -> VOID -> this
   // Ensures only given function is bound to given subscriptionID:
   subscribeOnce(subscriptionID, fn) {
-    this._subscriptions[subscriptionID] = fn;
+    this._subscriptions[subscriptionID] = [fn];
     return this;
   }
 

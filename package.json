@@ -7,6 +7,7 @@
     "test": "run-p watch server",
     "server": "npx browser-sync start -c ./configs/bs.js",
     "watch": "npx webpack -c ./configs/dev.js --watch",
+    "watch-build": "npx webpack -c ./configs/prod.js --watch",
     "build": "npx webpack -c ./configs/prod.js"
   },
   "repository": {
